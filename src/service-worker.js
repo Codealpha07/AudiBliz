@@ -690,14 +690,6 @@ async function getAvailableVoicesLocal() {
     { id: 'pl-PL-kasia', name: 'Kasia (Polish)', language: 'pl-PL' },
     { id: 'pl-PL-blazej', name: 'Blazej (Polish)', language: 'pl-PL' },
 
-    // Tamil voices
-    { id: 'ta-IN-iniya', name: 'Iniya (Tamil)', language: 'ta-IN' },
-    { id: 'ta-IN-mani', name: 'Mani (Tamil)', language: 'ta-IN' },
-
-    // Bengali voices
-    { id: 'bn-IN-anwesha', name: 'Anwesha (Bengali)', language: 'bn-IN' },
-    { id: 'bn-IN-ishani', name: 'Ishani (Bengali)', language: 'bn-IN' },
-    { id: 'bn-IN-abhik', name: 'Abhik (Bengali)', language: 'bn-IN' },
 
     // Japanese voices
     { id: 'ja-JP-kenji', name: 'Kenji (Japanese)', language: 'ja-JP' },
@@ -784,8 +776,6 @@ async function handleLanguagesAndVoicesRequest(sendResponse) {
       { code: 'sk', name: 'Slovak' },
       { code: 'nl', name: 'Dutch' },
       { code: 'pl', name: 'Polish' },
-      { code: 'ta', name: 'Tamil' },
-      { code: 'bn', name: 'Bengali' },
       { code: 'ja', name: 'Japanese' }
     ];
     
