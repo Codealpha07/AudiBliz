@@ -823,7 +823,7 @@ async function downloadAudioFiles(audioChunks) {
       try {
         // Use chrome.downloads API to download the file
         const filename = `${folderName}/chunk_${(i+1).toString().padStart(2, '0')}.mp3`;
-        console.log(9`Downloading ${chunk.audioUrl} as ${filename}`);
+        console.log(`Downloading ${chunk.audioUrl} as ${filename}`);
         
         await chrome.downloads.download({
           url: chunk.audioUrl,
@@ -837,6 +837,7 @@ async function downloadAudioFiles(audioChunks) {
         }
       } catch (error) {
         console.error(`Error downloading audio file ${i+1}:`, error);
+        sendResponse({ status: 'error', error: error.message });
         throw error;
       }
     }

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "AudiBliz",
+  "name": "AudiBliz ",
   "version": "0.1.0",
   "description": "Extracts webpage content, translates it, and converts it to speech for podcast-like listening",
   "permissions": ["storage", "activeTab", "scripting", "downloads", "tabs"],
@@ -18,7 +18,7 @@
     "run_at": "document_idle"
   }],
   "web_accessible_resources": [{
-    "resources": ["translated-text.html", "translated-text.js"],
+    "resources": ["translated-text.html", "translated-text.js", "icon.png"],
     "matches": ["<all_urls>"]
   }],
   "options_page": "options.html"
