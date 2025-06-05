@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web-to-Podcast Translator - Options</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    :root {
+      --primary-color: #6366f1; /* Indigo 500 */
+      --primary-hover: #4f46e5; /* Indigo 600 */
+      --secondary-color: #8b5cf6; /* Violet 500 */
+      --secondary-hover: #7c3aed; /* Violet 600 */
+      --tertiary-color: #a78bfa; /* Violet 400 */
+      --background-color: #f5f3ff; /* Violet 50 */
+      --card-background: #ffffff; /* White */
+      --text-primary: #2e1065; /* Violet 950 */
+      --text-secondary: #6366f1; /* Indigo 500 */
+      --border-color: #ddd6fe; /* Violet 200 */
+      --success-color: #10b981; /* Green 500 */
+      --error-color: #ef4444; /* Red 500 */
+      --warning-color: #f59e0b; /* Amber 500 */
+      --gradient-start: #4f46e5; /* Indigo 600 */
+      --gradient-end: #7c3aed; /* Violet 600 */
+      --gradient-bg: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px;
+      color: var(--text-primary);
+      background-color: var(--background-color);
+      line-height: 1.5;
+      font-size: 14px;
+      background-image: radial-gradient(circle at top right, rgba(124, 58, 237, 0.08), transparent 70%);
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.025em;
+      position: relative;
+    }
+    
+    h1 i {
+      font-size: 24px;
+    }
+    
+    .section {
+      margin-bottom: 30px;
+      background-color: var(--card-background);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .section:hover {
+      box-shadow: var(--shadow-xl);
+      transform: translateY(-2px);
+    }
+    
+    .section:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.08), transparent 70%);
+      border-radius: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    h2 {
+      font-size: 20px;
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    h2:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--gradient-bg);
+      border-radius: 3px;
+    }
+    
+    h2 i {
+      color: var(--secondary-color);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      font-size: 14px;
+      box-sizing: border-box;
+      background-color: white;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="%236366f1"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>');
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+    
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+    
+    .hint {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+    
+    button {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: none;
+      background: var(--gradient-bg);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    button:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--gradient-end), var(--gradient-start));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    button:hover:before {
+      opacity: 1;
+    }
+    
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+    }
+    
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+    
+    .status {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .success {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .error {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    
+    .storage-info {
+      margin-top: 18px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.05) 0%, rgba(124, 58, 237, 0.1) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    
+    .storage-info div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      background-color: rgba(255, 255, 255, 0.6);
+      border-radius: 10px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+    }
+    
+    .storage-info div:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .storage-info span {
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+      padding: 20px;
+      border-top: 1px solid var(--border-color);
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.03) 0%, rgba(124, 58, 237, 0.05) 100%);
+      border-radius: 0 0 16px 16px;
+    }
+    
+    footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: rgba(99, 102, 241, 0.1);
+      border: 1px solid var(--border-color);
+    }
+    
+    footer a:hover {
+      text-decoration: none;
+      background-color: rgba(37, 99, 235, 0.1);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px -1px rgba(37, 99, 235, 0.1);
+    }
+    
+    footer a:active {
+      transform: translateY(0);
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+  <h1><i class="fas fa-cog"></i> Web-to-Podcast Translator - Options</h1>
+  
+  <div class="section">
+    <h2><i class="fas fa-key"></i> API Settings</h2>
+    <div class="form-group">
+      <label for="murfApiKey">Murf API Key</label>
+      <input type="password" id="murfApiKey" placeholder="Enter your Murf API key">
+      <div class="hint">Required for text-to-speech functionality. Get your API key from <a href="https://murf.ai/api" target="_blank">murf.ai/api</a></div>
+    </div>
+    
+    <div class="form-group">
+      <div class="hint">The Murf API key is used for both text-to-speech and translation functionality.</div>
+    </div>
+    
+    <button id="saveApiSettings"><i class="fas fa-save"></i> Save API Settings</button>
+    <div id="apiStatus" class="status"></div>
+  </div>
+  
+  <div class="section">
+    <h2><i class="fas fa-language"></i> Translation Preferences</h2>
+    <div class="form-group">
+      <label for="defaultTargetLanguage">Default Target Language</label>
+      <select id="defaultTargetLanguage">
+        <option value="en">English</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <!-- More options will be loaded dynamically -->
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="defaultVoice">Default Voice</label>
+      <select id="defaultVoice">
+        <option value="en-US-natalie">Natalie (English)</option>
+        <option value="fr-FR-maxime">Maxime (French)</option>
+        <option value="es-ES-elvira">Elvira (Spanish)</option>
+        <!-- More options will be loaded dynamically -->
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="chunkSize">Text Chunk Size (characters)</label>
+      <input type="text" id="chunkSize" placeholder="3000" value="3000">
+      <div class="hint">Maximum characters per audio chunk (recommended: 3000)</div>
+    </div>
+    
+    <button id="savePreferences"><i class="fas fa-save"></i> Save Preferences</button>
+    <div id="preferencesStatus" class="status"></div>
+  </div>
+  
+  <div class="section">
+    <h2><i class="fas fa-database"></i> Storage Management</h2>
+    <div class="form-group">
+      <label for="storageDuration">Store Audio Files For</label>
+      <select id="storageDuration">
+        <option value="session">Current Session Only</option>
+        <option value="1day">1 Day</option>
+        <option value="1week">1 Week</option>
+        <option value="1month">1 Month</option>
+      </select>
+    </div>
+    
+    <button id="clearStorage"><i class="fas fa-trash-alt"></i> Clear All Stored Audio</button>
+    <div class="storage-info">
+      <div><i class="fas fa-file-audio"></i> Stored Audio Files: <span id="storedAudioCount">0</span></div>
+      <div><i class="fas fa-hdd"></i> Estimated Storage Used: <span id="storageUsed">0 MB</span></div>
+    </div>
+    <div id="storageStatus" class="status"></div>
+  </div>
+  
+  <footer>
+    Web-to-Podcast Translator v0.1.0 - <a href="https://github.com/yourusername/web-to-podcast-translator" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+  </footer>
+  
+  <script src="options.js"></script>
+</body>
+</html>

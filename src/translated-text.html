@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translated Text</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f3ff; /* Softer light gray */
+      color: #333; /* Softer dark text */
+      line-height: 1.65;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .container {
+      width: 100%;
+      max-width: 780px;
+      margin: 30px 20px;
+      background-color: #ffffff;
+      border-radius: 12px; /* Slightly less pronounced than before, more standard */
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07); /* Softer, more diffuse shadow */
+      padding: 30px 35px;
+      transition: box-shadow 0.3s ease-in-out;
+    }
+    .container:hover {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.09); /* Subtle hover shadow enhancement */
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 25px;
+      border-bottom: 1px solid #e8eaed; /* Lighter, softer border */
+    }
+     header .header {
+      color: #4f46e5 !important;
+      font-size: 28px;
+      margin: 0;
+      font-weight: 700;
+    }
+    header .header-icon{
+      color:#4f46e5 !important ;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.7rem; /* Slightly adjusted */
+      color: #202124; /* Google-ish dark gray */
+      font-weight: 600;
+      display: inline-flex; /* For icon alignment */
+      align-items: center;
+      gap: 10px; /* Space between icon and text */
+    }
+    h1 .fas {
+      color: #5f6368; /* Icon color for title */
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px; /* Slightly reduced gap */
+      margin-bottom: 25px;
+    }
+    button, .button { 
+      background-color: #4f46e5; /* Indigo/Purpleish blue - example blended color */
+      color: white;
+      border: none;
+      padding: 10px 18px; /* Adjusted padding */
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px; /* Adjusted gap */
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    button:hover, .button:hover {
+      background-color: #4338ca; /* Darker shade of base */
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+    button:active, .button:active {
+      background-color: #434d9f; /* Even darker */
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+      transform: translateY(0px);
+    }
+    button.copy, .button.copy {
+      background-color: #34a853; /* Google Green */
+    }
+    button.copy:hover, .button.copy:hover {
+      background-color: #2c8f46;
+    }
+    button.close-btn, .button.close-btn {
+      background-color:  #8b5cf6; /* Violet 500 */
+; /* Medium Gray */
+    }
+    button.close-btn:hover, .button.close-btn:hover {
+      background-color: #7c3aed;
+    }
+    .status {
+      font-size: 0.875rem;
+      color: #3c4043; /* Darker gray for text */
+      margin-top: 20px;
+      padding: 12px 18px;
+      border-radius: 8px;
+      background-color: #f1f3f4; /* Light gray background */
+      border: 1px solid #dadce0; /* Subtle border */
+      min-height: 1.5em;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      display: flex; /* For icon alignment */
+      align-items: center;
+      gap: 8px; /* Space for icon */
+    }
+    .status .fas {
+        font-size: 1.1em; /* Slightly larger icons in status */
+    }
+    .status.success {
+      color: #188038; /* Darker green for success text */
+      background-color: #e6f4ea; /* Light green background */
+      border-color: #b7e1c6;
+    }
+    .status.success .fas {
+      color: #188038;
+    }
+    .status.error {
+      color: #d93025; /* Red for error text */
+      background-color: #fce8e6; /* Light red background */
+      border-color: #f5c4c0;
+    }
+    .status.error .fas {
+      color: #d93025;
+    }
+    .status.info .fas { /* For default info messages if we add that type */
+        color: #1a73e8; /* Blue for info icons */
+    }
+    .translated-content {
+      background-color: #f5f3ff;
+      padding: 20px 25px;
+      border-radius: 8px;
+      border: 1px solid #dadce0;
+      min-height: 180px;
+      white-space: pre-wrap;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #202124;
+      margin-bottom: 25px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .info-box {
+      background-color: #f5f3ff; /* Lighter blue, Google style */
+      border-left: 4px solid #1a73e8; /* Google Blue */
+      padding: 15px 20px;
+      margin: 25px 0;
+      font-size: 0.875rem;
+      color: #3c4043;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      display: flex; /* For icon alignment */
+      align-items: center;
+      gap: 10px; /* Space for icon */
+    }
+    .info-box .fas {
+      color: #1a73e8; /* Icon color for info box */
+      font-size: 1.2em;
+    }
+    .info-box p {
+      margin: 0;
+      flex-grow: 1; /* Allow text to take remaining space */
+    }
+    .language-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 25px;
+      font-size: 0.875rem;
+      color: #5f6368; /* Medium gray for less emphasis */
+    }
+    .language-info > div {
+        margin-right: 12px;
+    }
+    .language-info > div:last-child {
+        margin-right: 0;
+    }
+    .language-badge {
+      background-color: #8b5cf6; /* Google Blue */
+      color: white;
+      padding: 5px 10px;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+    .language-badge:hover {
+        background-color: #7c3aed; /* Darker Google Blue */
+        transform: scale(1.03);
+    }
+    #printBtn{
+      background-color: #4f46e5;
+    }
+    #printBtn :hover{
+      background-color: #4338ca;
+    }
+
+    /* Print styles - keep these simple */
+    @media print {
+      body {
+        background-color: white;
+        padding: 0;
+        margin: 0;
+        display: block;
+        -webkit-font-smoothing: auto;
+        -moz-osx-font-smoothing: auto;
+        color: #000;
+      }
+      .container {
+        box-shadow: none;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+      }
+      .toolbar, header .close-btn, .info-box, .status, .language-badge:hover, h1 .fas {
+        display: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+      header {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+      h1 {
+        font-size: 1.5rem;
+        color: #000;
+        display: block; /* Reset flex for print */
+      }
+      .translated-content {
+        border: none;
+        padding: 0;
+        background-color: white;
+        min-height: auto;
+        color: #000;
+        box-shadow: none;
+      }
+      .language-info {
+        margin-bottom: 10px;
+        color: #000;
+      }
+      .language-badge {
+        background-color: #eee !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1 class="header" > <i class="fas fa-language header-icon" ></i> Translated Text</h1>
+      <button id="closeBtn" class="close-btn" title="Close this page"><i class="fas fa-times"></i> Close</button>
+    </header>
+    
+    <div class="language-info">
+      <div>From: <span id="sourceLanguage" class="language-badge">Auto-detected</span></div>
+      <div>To: <span id="targetLanguage" class="language-badge">English</span></div>
+    </div>
+    
+    <div class="toolbar">
+      <button id="copyBtn" class="copy" title="Copy to clipboard"><i class="fas fa-copy"></i> Copy to Clipboard</button>
+      <button id="printBtn" title="Print translated text"><i class="fas fa-print"></i> Print</button>
+    </div>
+    
+    <div id="translatedContent" class="translated-content">
+      Loading translated text...
+    </div>
+    
+    <div id="status" class="status"></div>
+    
+    <div class="info-box">
+      <i class="fas fa-info-circle"></i>
+      <p><strong>Note:</strong> This page displays the translated text. You can copy it to your clipboard or print it.</p>
+    </div>
+  </div>
+
+  <script src="translated-text.js"></script>
+</body>
+</html>
