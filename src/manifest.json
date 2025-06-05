@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Web-to-Podcast Translator",
+  "name": "AudiBliz",
   "version": "0.1.0",
   "description": "Extracts webpage content, translates it, and converts it to speech for podcast-like listening",
   "permissions": ["storage", "activeTab", "scripting", "downloads", "tabs"],
