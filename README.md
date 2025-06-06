@@ -1,6 +1,6 @@
 # AudiBliz Chrome Extension
 
-Turn any web article into spoken audio in your preferred language!
+Turn any web article into spoken audio in your preferred language !
 
 ---
 
@@ -11,6 +11,7 @@ Turn any web article into spoken audio in your preferred language!
 - [What Makes This Extension Special?](#what-makes-this-extension-special)
 - [About Murf API](#about-murf-api)
 - [Installation (Step-by-Step)](#installation-step-by-step)
+- [Setup Demo Video](#setup-demo-video)
 - [Troubleshooting (If Something Goes Wrong)](#troubleshooting-if-something-goes-wrong)
 - [How to Use It (For Everyone)](#how-to-use-it-for-everyone)
 - [For Developers (How to Modify or Improve)](#for-developers-how-to-modify-or-improve)
@@ -53,6 +54,10 @@ You need a Murf API key to use these features. You can get one by signing up at 
 4. *Load the Extension:* Click “Load unpacked” and select the "src" folder inside your project.
 5. *Set Up Your API Key:* Click the extension’s icon, go to “Options,” and enter your Murf API key.
 6. *Choose Preferences:* Pick your language, voice, and chunk size (how much text per audio segment).
+
+## Setup Demo Video
+https://github.com/user-attachments/assets/e3b585a8-0dc0-4cae-afc2-66ba7acb3ea6
+
 
 ## Troubleshooting (If Something Goes Wrong)
 - *No Audio?*
