@@ -77,8 +77,8 @@ https://github.com/user-attachments/assets/e3b585a8-0dc0-4cae-afc2-66ba7acb3ea6
 2. Go to Options & Settings from the popup.
 3. Enter your Murf API Key, select your preferred language, voice, and chunk size.
 4. Click Save Preferences.
-5. Refresh the web page you want to listen to.
-6. Open any article or web page.
+5. Open any article or web page.
+6. Refresh the web page you want to listen to.
 7. Click the Web-to-Podcast Translator extension icon again.
 8. Choose your target language and voice from the popup.
 9. Click "Translate & Generate Audio".
