@@ -1,8 +1,3 @@
-/**
- * Translated Text Page Script
- * Handles loading and displaying translated text in a dedicated page
- */
-
 document.addEventListener('DOMContentLoaded', function() {
   const translatedContent = document.getElementById('translatedContent');
   const sourceLanguage = document.getElementById('sourceLanguage');
@@ -12,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const closeBtn = document.getElementById('closeBtn');
   const status = document.getElementById('status');
 
-  // Get translated text and language information from the URL parameters
   const params = new URLSearchParams(window.location.search);
   const textId = params.get('id');
   
@@ -22,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     return;
   }
   
-  // Request the translated text from the service worker
   chrome.runtime.sendMessage({ 
     type: 'GET_STORED_TRANSLATION', 
     id: textId 
@@ -35,10 +28,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     if (response && response.translatedText) {
-      // Set the content
       translatedContent.textContent = response.translatedText;
       
-      // Update language badges
       if (response.sourceLanguage) {
         sourceLanguage.textContent = getLanguageName(response.sourceLanguage);
       }
@@ -54,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Copy button functionality
   copyBtn.addEventListener('click', function() {
     const text = translatedContent.textContent;
     
@@ -66,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(() => {
           setStatus('Text copied to clipboard!', 'success');
           
-          // Visual feedback
           copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
           setTimeout(() => {
             copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy to Clipboard';
@@ -81,24 +70,17 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  // Print button functionality
   printBtn.addEventListener('click', function() {
     window.print();
   });
-  
-  // Close button functionality
   closeBtn.addEventListener('click', function() {
     window.close();
   });
-  
-  /**
-   * Set status message with optional type (for styling)
-   */
+
   function setStatus(message, type = 'info') {
     status.textContent = message;
     status.className = 'status ' + type;
-    
-    // Clear status after 5 seconds if it's a success message
+  
     if (type === 'success') {
       setTimeout(() => {
         status.textContent = '';
@@ -106,9 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
   
-  /**
-   * Convert language code to full language name
-   */
   function getLanguageName(code) {
     const languageMap = {
       'en': 'English',

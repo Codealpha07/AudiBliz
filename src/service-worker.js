@@ -1,22 +1,13 @@
-/**
- * Web-to-Podcast Translator - Service Worker
- * Background script that manages the extension's lifecycle and communication
- */
 
-// In MV3 service workers, we need to use importScripts instead of ES6 imports
 try {
-  // Load all required modules via importScripts
   importScripts('./translate.js', './murf.js');
   console.log('Successfully loaded scripts');
   
-  // Initialize Murf API key
   chrome.storage.local.get(['murfApiKey'], (result) => {
     if (result.murfApiKey) {
-      // Set the API key globally for use in both murf.js and translate.js functions
       MURF_API_KEY = result.murfApiKey;
       console.log('Murf API key loaded from storage');
     } else {
-      // For development, initialize with a default key if needed
       MURF_API_KEY = 'ap2_50da4fd5-db8a-49fb-b638-bad3591e5da7';
       chrome.storage.local.set({ murfApiKey: MURF_API_KEY });
       console.log('Initialized default Murf API key');
@@ -26,7 +17,6 @@ try {
   console.error('Error loading scripts:', error);
 }
 
-// Global state to track current translation/audio generation status
 const state = {
   translating: false,
   currentTab: null,
@@ -36,47 +26,40 @@ const state = {
   currentAudio: null,
   audioPlaying: false,
   detectedLanguage: null,
-  preferredVoice: 'en-US-natalie', // Default voice (language-region-voicename format)
-  preferredLanguage: 'en-US',  // Default target language
-  storedTranslations: {},      // Store translations by ID for retrieval
-  lastTranslationId: null      // Track the most recent translation ID
+  preferredVoice: 'en-US-natalie',
+  preferredLanguage: 'en-US',
+  storedTranslations: {},
+  lastTranslationId: null
 };
 
-// Load saved preferences when the service worker starts
 chrome.storage.sync.get(['targetLanguage', 'preferredVoice'], (result) => {
   if (result.targetLanguage) state.preferredLanguage = result.targetLanguage;
   if (result.preferredVoice) state.preferredVoice = result.preferredVoice;
 });
 
-// Message handling from content scripts and popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('Message received:', message.type);
 
-  // Track whether we'll respond asynchronously for this particular message
   let isAsync = false;
 
   switch (message.type) {
     case 'PING':
-      // Simple ping to wake up service worker
       console.log('Received PING, service worker is awake');
       sendResponse({ status: 'awake' });
       break;
 
     case 'WEBPAGE_TEXT':
-      // Received text content from a webpage
       handleWebpageContent(message, sender.tab.id);
       sendResponse({ status: 'received' });
       break;
 
     case 'START_TRANSLATION':
-      // Manually triggered translation from popup
       state.translatedText = '';
       startTranslationProcess(message.tabId);
       sendResponse({ status: 'started' });
       break;
 
     case 'GET_TRANSLATED_TEXT':
-      // Request for the translated text to copy to clipboard
       console.log('GET_TRANSLATED_TEXT received, text available:', !!state.translatedText,
                   state.translatedText ? `length: ${state.translatedText.length}` : 'no text');
 
@@ -95,7 +78,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'GET_STORED_TRANSLATION': {
-      // Request for a specific stored translation by ID
       const translationId = message.id;
       if (translationId && state.storedTranslations[translationId]) {
         const translation = state.storedTranslations[translationId];
@@ -112,7 +94,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     case 'GET_STATUS':
-      // Status request from popup
       sendResponse({
         status: state.isProcessing ? 'processing' : 'ready',
         audioChunks: state.audioChunks,
@@ -137,7 +118,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'UPDATE_PREFERENCES':
       if (message.targetLanguage) {
         state.targetLanguage = message.targetLanguage;
-        state.preferredLanguage = message.targetLanguage; // keep in sync
+        state.preferredLanguage = message.targetLanguage;
         chrome.storage.sync.set({ targetLanguage: message.targetLanguage });
       }
       if (message.preferredVoice) {
@@ -148,10 +129,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'UPDATE_API_SETTINGS':
-      // Update API key coming from options page
       if (message.murfApiKey && message.murfApiKey.trim().length > 0) {
         MURF_API_KEY = message.murfApiKey.trim();
-        // Propagate to global scope for imported modules
         if (typeof self.MURF_API_KEY !== 'undefined') {
           self.MURF_API_KEY = MURF_API_KEY;
         }
@@ -162,13 +141,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
 
     case 'GET_LANGUAGES_AND_VOICES':
-      // This will respond asynchronously via handleLanguagesAndVoicesRequest
       isAsync = true;
       handleLanguagesAndVoicesRequest(sendResponse);
       break;
 
     case 'DOWNLOAD_AUDIO_FILES':
-      // Asynchronous handling
       isAsync = true;
       if (state.audioChunks && state.audioChunks.length > 0) {
         downloadAudioFiles(state.audioChunks)
@@ -180,11 +157,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       break;
   }
 
-  // Only return true (keep message channel open) if we need to respond asynchronously
   return isAsync;
 });
 
-// Handle incoming webpage content
 async function handleWebpageContent(message, tabId) {
   if (state.isProcessing) return;
   
@@ -194,17 +169,14 @@ async function handleWebpageContent(message, tabId) {
   state.audioChunks = [];
   
   try {
-    // Process the content if languages are different
     let content = message.content;
     
-    // Ensure targetLanguage is defined (fall back to preferredLanguage)
     if (!state.targetLanguage) {
       state.targetLanguage = state.preferredLanguage;
     }
     console.log(`Processing translation: detected=${state.detectedLanguage}, target=${state.targetLanguage}`);
     
     if (state.detectedLanguage !== state.targetLanguage) {
-      // Using globally imported translate module
       const translatedText = await translateText(
         message.content, 
         state.detectedLanguage, 
@@ -215,14 +187,11 @@ async function handleWebpageContent(message, tabId) {
       content = message.content;
     }
     
-    // Store the translated text in state for copy functionality
     state.translatedText = content;
     
-    // Generate a unique ID for this translation
     const translationId = Date.now().toString();
     state.lastTranslationId = translationId;
     
-    // Store translation with metadata for later retrieval
     state.storedTranslations[translationId] = {
       text: content,
       sourceLanguage: state.detectedLanguage,
@@ -234,10 +203,8 @@ async function handleWebpageContent(message, tabId) {
     console.log('Stored translation with ID:', translationId, 'length:', content.length, 
                'First 100 chars:', content.substring(0, 100));
     
-    // Using globally imported murf module
     await generateAudioFromText(content, message.title);
     
-    // Notify popup that processing is complete
     chrome.runtime.sendMessage({
       type: 'PROCESSING_COMPLETE',
       audioChunks: state.audioChunks
@@ -253,47 +220,37 @@ async function handleWebpageContent(message, tabId) {
   }
 }
 
-// Manually trigger content extraction and translation
 function startTranslationProcess(tabId) {
-  // Ensure we are ready to accept incoming WEBPAGE_TEXT
   state.isProcessing = false;
   state.currentTab = tabId;
   state.audioChunks = [];
   
-  // Send message to content script to extract content
   chrome.tabs.sendMessage(tabId, { type: 'EXTRACT_CONTENT' });
   
   console.log('Started translation process for tab:', tabId);
 }
 
-// Simplified version of splitIntoChunks for service worker
 function splitTextIntoChunks(text, maxLen = 3000) {
   console.log(`Splitting text into chunks (max ${maxLen} chars), total length: ${text.length}`);
   
-  // If text is already small enough, return as a single chunk
   if (text.length <= maxLen) {
     return [text];
   }
   
   const chunks = [];
   
-  // Split text by paragraphs
   const paragraphs = text.split(/\n\s*\n/);
   
   let currentChunk = '';
   
   for (const paragraph of paragraphs) {
-    // If adding this paragraph would exceed the limit
     if (currentChunk.length + paragraph.length > maxLen) {
-      // If we already have content in the current chunk, save it
       if (currentChunk.length > 0) {
         chunks.push(currentChunk);
         currentChunk = '';
       }
       
-      // If this paragraph alone is too big, split it further by sentences
       if (paragraph.length > maxLen) {
-        // Simple sentence splitting by punctuation
         const sentences = paragraph.split(/([.!?]\s)/);
         let sentenceChunk = '';
         
@@ -314,11 +271,9 @@ function splitTextIntoChunks(text, maxLen = 3000) {
           }
         }
       } else {
-        // This paragraph fits in a chunk by itself
         currentChunk = paragraph;
       }
     } else {
-      // Add paragraph to current chunk
       if (currentChunk.length > 0) {
         currentChunk += '\n\n';
       }
@@ -326,7 +281,6 @@ function splitTextIntoChunks(text, maxLen = 3000) {
     }
   }
   
-  // Don't forget the last chunk
   if (currentChunk.length > 0) {
     chunks.push(currentChunk);
   }
@@ -335,37 +289,29 @@ function splitTextIntoChunks(text, maxLen = 3000) {
   return chunks;
 }
 
-// Local implementation of generateAudio function for service worker
 async function generateAudioLocal(text, voiceId) {
   console.log(`Generating audio for ${text.length} characters using voice ${voiceId}`);
   
   try {
-    // If MURF_API_KEY is not available, use the default known key
     if (!MURF_API_KEY || MURF_API_KEY.length < 10) {
       console.log('Using default Murf API key');
       MURF_API_KEY = 'ap2_50da4fd5-db8a-49fb-b638-bad3591e5da7';
     }
     
-    // Make sure we have a valid voice ID in format language-region-voicename (lowercase)
     let voice = voiceId;
     if (!voice) {
-      // Default to en-US-terrell if no voice ID provided
       voice = 'en-US-terrell';
       console.log('Using default voice: en-US-terrell');
     }
     
-    // If voice doesn't match the language-region-voicename pattern, assume it's just a name and convert
     if (voice && !voice.includes('-')) {
-      // First letter uppercase, rest lowercase for the name
       const name = voice.charAt(0).toUpperCase() + voice.slice(1).toLowerCase();
       voice = `en-US-${name.toLowerCase()}`;
       console.log(`Converting voice name to full ID format: ${voice}`);
     }
     
-    // Log the voice ID we're using for debugging
     console.log('Final voice ID being used:', voice);
     
-    // Match the Murf API parameters used in murf.js for consistency
     const response = await fetch('https://api.murf.ai/v1/speech/generate', {
       method: 'POST',
       headers: {
@@ -373,37 +319,31 @@ async function generateAudioLocal(text, voiceId) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        text: text,              // Text to convert to speech
-        voiceId: voice,          // Voice ID in language-region-voicename format
-        style: 'Conversational', // Voice style
-        format: 'MP3',           // Output format (capitalized as in murf.js)
-        modelVersion: 'GEN2'     // Using the latest model version
+        text: text,
+        voiceId: voice,
+        style: 'Conversational',
+        format: 'MP3',
+        modelVersion: 'GEN2'
       })
     });
     
     if (!response.ok) {
       console.error(`Failed to generate audio: ${response.status} ${response.statusText}`);
-      // Try to get more detailed error information
       try {
         const errorData = await response.json();
         console.error('Error details:', errorData);
       } catch (e) {
-        // Ignore parsing errors
       }
-      return 'data:audio/mp3;base64,AAAA'; // Return empty audio on error
+      return 'data:audio/mp3;base64,AAAA';
     }
     
-    // Check the response content-type to determine how to handle it
     const contentType = response.headers.get('content-type');
     console.log('Response content-type:', contentType);
     
-    // Murf API might return JSON with an audio URL or a direct audio file
     if (contentType && contentType.includes('application/json')) {
-      // Handle JSON response which contains audio URL
       const jsonResponse = await response.json();
       console.log('Received JSON response from Murf API:', jsonResponse);
       
-      // Check for audioFile, audio_file or url property in the response
       if (jsonResponse.audioFile) {
         console.log('Found audioFile URL in response');
         return jsonResponse.audioFile;
@@ -416,14 +356,12 @@ async function generateAudioLocal(text, voiceId) {
       } else {
         console.error('No audio URL found in JSON response');
         console.log('Response structure:', Object.keys(jsonResponse));
-        return 'data:audio/mp3;base64,AAAA'; // Return empty audio on error
+        return 'data:audio/mp3;base64,AAAA';
       }
     } else {
-      // Handle binary audio response
       console.log('Received binary audio response, converting to data URL');
       const blob = await response.blob();
       
-      // Convert blob to data URL
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -435,29 +373,24 @@ async function generateAudioLocal(text, voiceId) {
     }
   } catch (error) {
     console.error('Error generating audio:', error);
-    return 'data:audio/mp3;base64,AAAA'; // Return empty audio on error
+    return 'data:audio/mp3;base64,AAAA';
   }
 }
 
-// Generate audio from text by chunking and calling Murf API
 async function generateAudioFromText(text, title) {
-  // Using our local text chunking implementation
   const chunks = splitTextIntoChunks(text);
   
-  // Process each chunk sequentially
   for (let i = 0; i < chunks.length; i++) {
     try {
-      // Check if generateAudio function exists
       if (typeof generateAudio !== 'function') {
         console.log('Using local generateAudio implementation');
-        // Use our local implementation
         const audioUrl = await generateAudioLocal(chunks[i], state.preferredVoice);
         console.log('Generated audio URL:', audioUrl);
         state.audioChunks.push({
           index: i,
           title: i === 0 ? title : `Part ${i+1}`,
-          audioUrl: audioUrl,  // Changed from 'url' to 'audioUrl' to match the property used below
-          duration: 5, // Mock duration
+          audioUrl: audioUrl,
+          duration: 5,
           chunkText: chunks[i].substring(0, 100) + '...'
         });
         continue;
@@ -465,7 +398,6 @@ async function generateAudioFromText(text, title) {
       
       const audioUrl = await generateAudio(chunks[i], state.preferredVoice);
       
-      // Store the audio chunk information
       state.audioChunks.push({
         index: i,
         title: i === 0 ? title : `Part ${i+1}`,
@@ -474,7 +406,6 @@ async function generateAudioFromText(text, title) {
         complete: true
       });
       
-      // Notify popup of progress
       chrome.runtime.sendMessage({
         type: 'CHUNK_PROCESSED',
         chunk: state.audioChunks[i],
@@ -489,11 +420,9 @@ async function generateAudioFromText(text, title) {
   }
 }
 
-// Local implementation of getAvailableVoices for service worker
 async function getAvailableVoicesLocal() {
   console.log('Using local implementation of getAvailableVoices');
   
-  // Default fallback voices for common languages using the correct format (language-region-voicename)
   const fallbackVoices = [
     // English US & Canada voices
     { id: 'en-US-natalie', name: 'Natalie (English US)', language: 'en-US' },
@@ -697,14 +626,12 @@ async function getAvailableVoicesLocal() {
     { id: 'ja-JP-denki', name: 'Denki (Japanese)', language: 'ja-JP' }
   ];
   
-  // If no Murf API key, return fallback voices
   if (!MURF_API_KEY) {
     console.log('No Murf API key found, returning fallback voices');
     return fallbackVoices;
   }
 
   try {
-    // Try to fetch voices from Murf API
     const response = await fetch('https://api.murf.ai/v1/speech/voices', {
       method: 'GET',
       headers: {
@@ -722,17 +649,10 @@ async function getAvailableVoicesLocal() {
     console.log('Murf voices response:', data);
     
     if (data && Array.isArray(data.voices)) {
-      // Map Murf voices to our format
       return data.voices.map(voice => {
-        // Ensure voice ID is in language-region-voicename format
-        // If voice_id is already in that format, use it directly
-        // Otherwise try to construct it from language_code and name
         let voiceId = voice.voice_id;
-        
-        // Check if voice_id matches our expected format
         if (voiceId && !voiceId.includes('-')) {
-          // If not, try to build it from language_code and name
-          const langCode = voice.language_code; // should be like en-US
+          const langCode = voice.language_code;
           const voiceName = voice.name.toLowerCase().replace(/\s+/g, '');
           
           if (langCode && langCode.includes('-')) {
@@ -757,10 +677,8 @@ async function getAvailableVoicesLocal() {
   }
 }
 
-// Handle request for supported languages and voices
 async function handleLanguagesAndVoicesRequest(sendResponse) {
   try {
-    // Get languages list (hardcoded for reliability)
     const languages = [
       { code: 'en', name: 'English' },
       { code: 'fr', name: 'French' },
@@ -779,10 +697,8 @@ async function handleLanguagesAndVoicesRequest(sendResponse) {
       { code: 'ja', name: 'Japanese' }
     ];
     
-    // Get voices using our local implementation
     const voices = await getAvailableVoicesLocal();
     
-    // Send the response back to the popup
     sendResponse({ 
       languages: languages,
       voices: voices
@@ -790,10 +706,8 @@ async function handleLanguagesAndVoicesRequest(sendResponse) {
     
   } catch (error) {
     console.error('Error fetching languages and voices:', error);
-    // Send error response
     sendResponse({ 
       error: error.message,
-      // Send default fallback values
       languages: [{ code: 'en', name: 'English' }, { code: 'es', name: 'Spanish' }, { code: 'fr', name: 'French' }],
       voices: [
         { id: 'en-US-natalie', name: 'Natalie (English)', language: 'en-US' },
@@ -804,24 +718,16 @@ async function handleLanguagesAndVoicesRequest(sendResponse) {
   }
 }
 
-/**
- * Download audio files from a list of audio chunks
- * @param {Array} audioChunks - Array of audio chunk objects with audioUrl properties
- * @returns {Promise} - Promise that resolves when all downloads are complete
- */
 async function downloadAudioFiles(audioChunks) {
   console.log(`Starting download of ${audioChunks.length} audio files`);
   
-  // Create folder name based on current date/time
   const date = new Date();
   const folderName = `podcast_${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}_${date.getHours().toString().padStart(2, '0')}-${date.getMinutes().toString().padStart(2, '0')}`;
   
-  // Download each audio file
   for (let i = 0; i < audioChunks.length; i++) {
     const chunk = audioChunks[i];
     if (chunk && chunk.audioUrl) {
       try {
-        // Use chrome.downloads API to download the file
         const filename = `${folderName}/chunk_${(i+1).toString().padStart(2, '0')}.mp3`;
         console.log(`Downloading ${chunk.audioUrl} as ${filename}`);
         
@@ -831,7 +737,6 @@ async function downloadAudioFiles(audioChunks) {
           conflictAction: 'uniquify'
         });
         
-        // Small delay between downloads to prevent throttling
         if (i < audioChunks.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 300));
         }
@@ -847,10 +752,8 @@ async function downloadAudioFiles(audioChunks) {
   return true;
 }
 
-// Listen for tab updates to reset state when navigating
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tabId === state.currentTab) {
-    // Reset state for new page
     state.isProcessing = false;
     state.audioChunks = [];
     state.currentPlayingIndex = -1;
